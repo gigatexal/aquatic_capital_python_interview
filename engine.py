@@ -25,37 +25,33 @@ from dataclasses import dataclass
 
 DATA = "./data/chicago_beach_weather.csv"
 
+@dataclass
+class Row:
+    station: str
+    ts: datetime
+    ts_as_date: date
+    temps: list[tuple[datetime, float]]
+
+    def add_temp(self, ts: datetime, temperature: float):
+        self.temps.append((ts, temperature))
+
+    @property
+    def min_temp(self):
+        return sorted
+
 
 
 if __name__ == '__main__':
-    @dataclass
-    class Station:
-        data: dict[str, dict[date, list[tuple[datetime, float]]]]
-
-        @property
-        def max_temp(self):
-            pass
-
-        @property
-        def min_temp(self):
-            pass
-
-        @property
-        def first_temp(self):
-            pass
-
-        @property
-        def last_temp(self):
-            pass
-
-        def update(self, station: str, date: date, datetime: datetime, temp: float):
-            if station not in self.data:
-                self.data[station]={date:[]}
-            self.data[station].setdefault(date, [])
-
+    # construct a balanced tree for each station and then each date
+    # rebalance on each insert so that the main node is the first date or oldest date and the last is the most recent
+    # mayne not a tree but a list of tuples could do this
+    # perhaps the row class is fine if it just inherited from tuple instead of being a dataclass
+    # namedtuple?
+    # or just make Row sortable?
+    grouped_entries: dict[tuple, Row]
+    grouped_entries = {}
     with open(DATA) as data:
         dict_reader: csv.DictReader = csv.DictReader(data)
-        measurement_station = Station(data={})
         for item in dict_reader:
             
             # parse columns
@@ -63,10 +59,24 @@ if __name__ == '__main__':
             timestamp: datetime = datetime.strptime(item["Measurement Timestamp"], r"%m/%d/%Y %H:%M:%S %p")
             timestamp_as_date: date = timestamp.date()
             temperature: float = float(item["Air Temperature"])
+            
+            # helpers
+            key = (station, timestamp)
+            if key not in grouped_entries:
+                grouped_entries.setdefault(key, \
+                        Row(station=station, ts=timestamp, ts_as_date=timestamp_as_date, temps=[(timestamp, temperature)]))
 
-            measurement_station.update(station=station, date=timestamp_as_date, datetime=timestamp, temp=temperature)
-            print(measurement_station.data)
-    
+            else:
+                grouped_entries[key].add_temp(timestamp, temperature)
+
+    print(grouped_entries)
+
+
+
+
+
+
+             
            
              
 
