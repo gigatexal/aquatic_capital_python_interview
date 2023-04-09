@@ -48,6 +48,7 @@ if __name__ == '__main__':
     # perhaps the row class is fine if it just inherited from tuple instead of being a dataclass
     # namedtuple?
     # or just make Row sortable?
+    # https://stackoverflow.com/questions/7152497/making-a-python-user-defined-class-sortable-hashable
     grouped_entries: dict[tuple, Row]
     grouped_entries = {}
     with open(DATA) as data:
