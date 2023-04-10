@@ -1,0 +1,4 @@
+Station Name              object
+Measurement Timestamp     object
+Air Temperature          float64
+dtype: object
